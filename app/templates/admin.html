@@ -3,7 +3,8 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Dashboard · Leucode.IA</title>
+<title>Mensajes · Stratechic</title>
+<link rel="icon" href="{{ url_for('static', filename='stratechic-logo.png') }}">
 <script src="https://cdn.tailwindcss.com"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -15,8 +16,8 @@
         fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'] },
         colors: {
           medical: {
-            50:'#eef2ff',100:'#dbe4ff',200:'#b5c6ff',300:'#8aa4ff',400:'#5c82ff',
-            500:'#2f5dff',600:'#2247e0',700:'#1737b8',800:'#122b8f',900:'#0e2167'
+            50:'#f0fdfa',100:'#ccfbf1',200:'#99f6e4',300:'#5eead4',400:'#2dd4bf',
+            500:'#14b8a6',600:'#0d9488',700:'#0f766e',800:'#0b1220',900:'#020617'
           }
         }
       }
@@ -27,8 +28,8 @@
   body { font-family: 'Inter', sans-serif; }
   .grid-bg {
     background-image:
-      linear-gradient(rgba(47,93,255,0.05) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(47,93,255,0.05) 1px, transparent 1px);
+      linear-gradient(rgba(20,184,166,0.08) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(20,184,166,0.08) 1px, transparent 1px);
     background-size: 40px 40px;
   }
   @keyframes ecg-pulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.08)} }
@@ -38,9 +39,9 @@
   @keyframes slideIn { from{opacity:0;transform:translateX(-20px)} to{opacity:1;transform:translateX(0)} }
   .slide-in { animation: slideIn .4s ease-out both; }
   .stat-card { transition: all .3s ease; }
-  .stat-card:hover { transform: translateY(-4px); box-shadow: 0 20px 40px -10px rgba(47,93,255,.25); }
+  .stat-card:hover { transform: translateY(-4px); box-shadow: 0 20px 40px -10px rgba(20,184,166,.25); }
   .msg-row { transition: background-color .2s ease; }
-  .msg-row:hover { background-color: rgba(47,93,255,0.04); }
+  .msg-row:hover { background-color: rgba(20,184,166,0.06); }
   .btn-icon { transition: all .2s ease; }
   .btn-icon:hover { transform: scale(1.1); }
 </style>
@@ -52,15 +53,8 @@
 <header class="relative z-20 bg-white/80 backdrop-blur-lg border-b border-medical-100 sticky top-0">
   <div class="container mx-auto px-4 py-3 flex items-center justify-between">
     <a href="{{ url_for('main.index') }}" class="flex items-center gap-3 group">
-      <div class="ecg-logo w-10 h-10 rounded-xl flex items-center justify-center shadow-md" style="background: linear-gradient(135deg, #2f5dff, #1737b8);">
-        <svg viewBox="0 0 32 32" class="w-7 h-7" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M2 16 L8 16 L10 10 L14 22 L18 6 L22 20 L24 16 L30 16"/>
-        </svg>
-      </div>
-      <div>
-        <div class="font-extrabold text-gray-900 leading-tight">Leucode<span class="text-medical-600">.IA</span></div>
-        <div class="text-[10px] text-medical-600 font-semibold tracking-widest uppercase">Dashboard admin</div>
-      </div>
+      <img src="{{ url_for('static', filename='stratechic-logo.png') }}" alt="Stratechic" class="h-9 w-auto">
+      <div class="text-[10px] text-medical-700 font-semibold tracking-widest uppercase">Mensajes</div>
     </a>
     <div class="flex items-center gap-3">
       <a href="{{ url_for('main.index') }}" target="_blank" class="hidden sm:inline-flex items-center gap-2 text-sm text-gray-600 hover:text-medical-600 transition-colors">
@@ -102,7 +96,7 @@
         </span>
         Panel en vivo
       </div>
-      <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900">Consultas recibidas</h1>
+      <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900">Mensajes de Stratechic</h1>
       <p class="text-gray-500 mt-1">Gestiona los mensajes enviados desde el formulario de contacto.</p>
     </div>
   </div>
@@ -203,7 +197,7 @@
             </td>
             <td class="px-5 py-4">
               {% if m.empresa %}
-                <span class="inline-flex items-center gap-1 text-sm text-gray-700"><i class="fas fa-hospital text-medical-400"></i> {{ m.empresa }}</span>
+                <span class="inline-flex items-center gap-1 text-sm text-gray-700"><i class="fas fa-building text-medical-600"></i> {{ m.empresa }}</span>
               {% else %}
                 <span class="text-gray-300">—</span>
               {% endif %}
@@ -288,7 +282,7 @@
       <div class="space-y-1 text-sm">
         <a href="mailto:{{ m.email }}" class="flex items-center gap-2 text-medical-600"><i class="fas fa-envelope"></i> {{ m.email }}</a>
         {% if m.telefono %}<div class="flex items-center gap-2 text-gray-500"><i class="fas fa-phone"></i> {{ m.telefono }}</div>{% endif %}
-        {% if m.empresa %}<div class="flex items-center gap-2 text-gray-500"><i class="fas fa-hospital"></i> {{ m.empresa }}</div>{% endif %}
+        {% if m.empresa %}<div class="flex items-center gap-2 text-gray-500"><i class="fas fa-building"></i> {{ m.empresa }}</div>{% endif %}
       </div>
       <p class="text-sm text-gray-700 mt-3 pt-3 border-t border-gray-100">{{ m.mensaje }}</p>
       <div class="flex gap-2 mt-4">
@@ -319,7 +313,7 @@
   <p id="noResults" class="hidden text-center text-gray-400 py-8"><i class="fas fa-search"></i> Sin resultados para tu búsqueda.</p>
 
   <footer class="mt-12 text-center text-xs text-gray-400">
-    © {{ config.STORE_NAME or 'Leucode.IA' }} · Panel administrativo
+    © Stratechic · Panel de mensajes
   </footer>
 </section>
 
