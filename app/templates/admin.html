@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Dashboard · Leucode.IA</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'] },
+        colors: {
+          medical: {
+            50:'#eef2ff',100:'#dbe4ff',200:'#b5c6ff',300:'#8aa4ff',400:'#5c82ff',
+            500:'#2f5dff',600:'#2247e0',700:'#1737b8',800:'#122b8f',900:'#0e2167'
+          }
+        }
+      }
+    }
+  };
+</script>
+<style>
+  body { font-family: 'Inter', sans-serif; }
+  .grid-bg {
+    background-image:
+      linear-gradient(rgba(47,93,255,0.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(47,93,255,0.05) 1px, transparent 1px);
+    background-size: 40px 40px;
+  }
+  @keyframes ecg-pulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.08)} }
+  .ecg-logo { animation: ecg-pulse 2s ease-in-out infinite; }
+  @keyframes fadeUp { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+  .fade-up { animation: fadeUp .5s ease-out both; }
+  @keyframes slideIn { from{opacity:0;transform:translateX(-20px)} to{opacity:1;transform:translateX(0)} }
+  .slide-in { animation: slideIn .4s ease-out both; }
+  .stat-card { transition: all .3s ease; }
+  .stat-card:hover { transform: translateY(-4px); box-shadow: 0 20px 40px -10px rgba(47,93,255,.25); }
+  .msg-row { transition: background-color .2s ease; }
+  .msg-row:hover { background-color: rgba(47,93,255,0.04); }
+  .btn-icon { transition: all .2s ease; }
+  .btn-icon:hover { transform: scale(1.1); }
+</style>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-white via-medical-50/40 to-white relative">
+<div class="absolute inset-0 grid-bg pointer-events-none opacity-50"></div>
+
+<!-- Topbar -->
+<header class="relative z-20 bg-white/80 backdrop-blur-lg border-b border-medical-100 sticky top-0">
+  <div class="container mx-auto px-4 py-3 flex items-center justify-between">
+    <a href="{{ url_for('main.index') }}" class="flex items-center gap-3 group">
+      <div class="ecg-logo w-10 h-10 rounded-xl flex items-center justify-center shadow-md" style="background: linear-gradient(135deg, #2f5dff, #1737b8);">
+        <svg viewBox="0 0 32 32" class="w-7 h-7" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M2 16 L8 16 L10 10 L14 22 L18 6 L22 20 L24 16 L30 16"/>
+        </svg>
+      </div>
+      <div>
+        <div class="font-extrabold text-gray-900 leading-tight">Leucode<span class="text-medical-600">.IA</span></div>
+        <div class="text-[10px] text-medical-600 font-semibold tracking-widest uppercase">Dashboard admin</div>
+      </div>
+    </a>
+    <div class="flex items-center gap-3">
+      <a href="{{ url_for('main.index') }}" target="_blank" class="hidden sm:inline-flex items-center gap-2 text-sm text-gray-600 hover:text-medical-600 transition-colors">
+        <i class="fas fa-external-link-alt"></i> Ver sitio
+      </a>
+      <a href="{{ url_for('admin.logout') }}" class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-rose-50 text-rose-600 hover:bg-rose-100 border border-rose-200 text-sm font-semibold transition-colors">
+        <i class="fas fa-right-from-bracket"></i> Salir
+      </a>
+    </div>
+  </div>
+</header>
+
+<section class="relative z-10 container mx-auto px-4 py-8">
+
+  <!-- Flash -->
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      <div class="mb-6 space-y-2 fade-up">
+        {% for category, message in messages %}
+          <div class="text-sm rounded-xl px-4 py-3 border flex items-center gap-2
+                      {% if category == 'success' %} border-emerald-200 bg-emerald-50 text-emerald-800
+                      {% elif category in ['error','danger'] %} border-rose-200 bg-rose-50 text-rose-800
+                      {% else %} border-medical-200 bg-medical-50 text-medical-800 {% endif %}">
+            <i class="fas {% if category == 'success' %}fa-circle-check{% elif category in ['error','danger'] %}fa-circle-exclamation{% else %}fa-circle-info{% endif %}"></i>
+            <span>{{ message }}</span>
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+  {% endwith %}
+
+  <!-- Hero header -->
+  <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-4 mb-8 fade-up">
+    <div>
+      <div class="inline-flex items-center gap-2 bg-medical-50 border border-medical-200 text-medical-700 px-3 py-1 rounded-full text-xs font-semibold mb-2">
+        <span class="relative flex w-2 h-2">
+          <span class="absolute inline-flex w-full h-full rounded-full bg-medical-500 opacity-75 animate-ping"></span>
+          <span class="relative inline-flex w-2 h-2 rounded-full bg-medical-500"></span>
+        </span>
+        Panel en vivo
+      </div>
+      <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900">Consultas recibidas</h1>
+      <p class="text-gray-500 mt-1">Gestiona los mensajes enviados desde el formulario de contacto.</p>
+    </div>
+  </div>
+
+  <!-- Stats -->
+  {% set total = mensajes|length %}
+  {% set pendientes = mensajes|selectattr("leido", "equalto", False)|list|length %}
+  {% set leidos = mensajes|selectattr("leido", "equalto", True)|list|length %}
+
+  <div class="grid sm:grid-cols-3 gap-5 mb-8">
+    <div class="stat-card fade-up bg-white rounded-2xl p-6 border border-medical-100 shadow-sm" style="animation-delay:.05s">
+      <div class="flex items-start justify-between">
+        <div>
+          <p class="text-xs uppercase tracking-wider text-gray-500 font-semibold">Total mensajes</p>
+          <p class="text-4xl font-black text-gray-900 mt-2">{{ total }}</p>
+          <p class="text-xs text-gray-400 mt-1">Historial completo</p>
+        </div>
+        <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-medical-500 to-medical-700 flex items-center justify-center shadow-md">
+          <i class="fas fa-envelope text-white text-lg"></i>
+        </div>
+      </div>
+    </div>
+
+    <div class="stat-card fade-up bg-white rounded-2xl p-6 border border-amber-100 shadow-sm" style="animation-delay:.1s">
+      <div class="flex items-start justify-between">
+        <div>
+          <p class="text-xs uppercase tracking-wider text-gray-500 font-semibold">Pendientes</p>
+          <p class="text-4xl font-black text-amber-500 mt-2">{{ pendientes }}</p>
+          <p class="text-xs text-gray-400 mt-1">Por revisar</p>
+        </div>
+        <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center shadow-md">
+          <i class="fas fa-clock text-white text-lg"></i>
+        </div>
+      </div>
+    </div>
+
+    <div class="stat-card fade-up bg-white rounded-2xl p-6 border border-emerald-100 shadow-sm" style="animation-delay:.15s">
+      <div class="flex items-start justify-between">
+        <div>
+          <p class="text-xs uppercase tracking-wider text-gray-500 font-semibold">Leídos</p>
+          <p class="text-4xl font-black text-emerald-500 mt-2">{{ leidos }}</p>
+          <p class="text-xs text-gray-400 mt-1">Procesados</p>
+        </div>
+        <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-400 to-emerald-600 flex items-center justify-center shadow-md">
+          <i class="fas fa-circle-check text-white text-lg"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filtros + buscador -->
+  <div class="bg-white rounded-2xl p-4 border border-gray-100 shadow-sm mb-6 fade-up flex flex-col md:flex-row gap-3" style="animation-delay:.2s">
+    <div class="relative flex-1">
+      <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
+      <input id="searchInput" type="text" placeholder="Buscar por nombre, email, empresa o mensaje…"
+             class="w-full pl-11 pr-4 py-3 rounded-xl border border-gray-200 bg-gray-50 focus:bg-white focus:border-medical-500 focus:ring-2 focus:ring-medical-200 focus:outline-none text-sm" />
+    </div>
+    <div class="flex gap-2" id="filterBtns">
+      <button data-filter="all" class="filter-btn active px-4 py-2 rounded-xl text-sm font-semibold bg-medical-600 text-white">Todos</button>
+      <button data-filter="pending" class="filter-btn px-4 py-2 rounded-xl text-sm font-semibold bg-amber-50 text-amber-700 border border-amber-200 hover:bg-amber-100">Pendientes</button>
+      <button data-filter="read" class="filter-btn px-4 py-2 rounded-xl text-sm font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100">Leídos</button>
+    </div>
+  </div>
+
+  <!-- Tabla (>= md) -->
+  <div class="hidden md:block bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden fade-up" style="animation-delay:.25s">
+    <div class="overflow-x-auto">
+      <table class="min-w-full text-sm">
+        <thead class="bg-gradient-to-r from-medical-50 to-white border-b border-medical-100">
+          <tr class="text-left text-xs uppercase tracking-wider text-medical-700 font-bold">
+            <th class="px-5 py-3">#</th>
+            <th class="px-5 py-3">Contacto</th>
+            <th class="px-5 py-3">Empresa</th>
+            <th class="px-5 py-3">Mensaje</th>
+            <th class="px-5 py-3">Fecha</th>
+            <th class="px-5 py-3 text-center">Estado</th>
+            <th class="px-5 py-3 text-center">Acciones</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-100" id="msgTableBody">
+          {% for m in mensajes %}
+          <tr class="msg-row slide-in {% if not m.leido %}bg-amber-50/40{% endif %}"
+              data-status="{{ 'read' if m.leido else 'pending' }}"
+              data-search="{{ (m.nombre ~ ' ' ~ m.email ~ ' ' ~ (m.empresa or '') ~ ' ' ~ m.mensaje)|lower }}"
+              style="animation-delay: {{ loop.index0 * 0.03 }}s">
+            <td class="px-5 py-4 text-gray-400 font-mono text-xs">#{{ m.id }}</td>
+            <td class="px-5 py-4">
+              <div class="flex items-center gap-3">
+                <div class="w-9 h-9 rounded-full bg-gradient-to-br from-medical-500 to-medical-700 flex items-center justify-center text-white font-bold text-xs flex-shrink-0">
+                  {{ m.nombre[0]|upper if m.nombre else '?' }}
+                </div>
+                <div class="min-w-0">
+                  <div class="font-semibold text-gray-900 truncate">{{ m.nombre }}</div>
+                  <a href="mailto:{{ m.email }}" class="text-xs text-medical-600 hover:underline truncate block">{{ m.email }}</a>
+                  {% if m.telefono %}<div class="text-xs text-gray-400"><i class="fas fa-phone text-[10px]"></i> {{ m.telefono }}</div>{% endif %}
+                </div>
+              </div>
+            </td>
+            <td class="px-5 py-4">
+              {% if m.empresa %}
+                <span class="inline-flex items-center gap-1 text-sm text-gray-700"><i class="fas fa-hospital text-medical-400"></i> {{ m.empresa }}</span>
+              {% else %}
+                <span class="text-gray-300">—</span>
+              {% endif %}
+            </td>
+            <td class="px-5 py-4 max-w-[280px]">
+              <p class="text-gray-700 line-clamp-2" title="{{ m.mensaje }}">{{ m.mensaje }}</p>
+            </td>
+            <td class="px-5 py-4 text-gray-500 text-xs whitespace-nowrap">
+              <i class="far fa-calendar"></i> {{ m.fecha.strftime("%d-%m-%Y") }}<br>
+              <i class="far fa-clock"></i> {{ m.fecha.strftime("%H:%M") }}
+            </td>
+            <td class="px-5 py-4 text-center">
+              {% if m.leido %}
+                <span class="inline-flex items-center gap-1 px-2.5 py-1 text-xs rounded-full bg-emerald-100 text-emerald-700 font-semibold"><i class="fas fa-check"></i> Leído</span>
+              {% else %}
+                <span class="inline-flex items-center gap-1 px-2.5 py-1 text-xs rounded-full bg-amber-100 text-amber-700 font-semibold"><i class="fas fa-envelope-open-text"></i> Pendiente</span>
+              {% endif %}
+            </td>
+            <td class="px-5 py-4">
+              <div class="flex items-center justify-center gap-2">
+                <form method="POST" action="{{ url_for('admin.toggle_mensaje', id=m.id) }}">
+                  <button type="submit" title="{% if m.leido %}Marcar no leído{% else %}Marcar leído{% endif %}"
+                          class="btn-icon w-9 h-9 grid place-items-center rounded-lg bg-medical-50 text-medical-600 hover:bg-medical-100 border border-medical-200">
+                    <i class="fas {% if m.leido %}fa-envelope{% else %}fa-envelope-open{% endif %} text-xs"></i>
+                  </button>
+                </form>
+                <a href="mailto:{{ m.email }}" title="Responder por email"
+                   class="btn-icon w-9 h-9 grid place-items-center rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-100 border border-blue-200">
+                  <i class="fas fa-reply text-xs"></i>
+                </a>
+                <form method="POST" action="{{ url_for('admin.delete_mensaje', id=m.id) }}"
+                      onsubmit="return confirm('¿Seguro que deseas eliminar este mensaje?');">
+                  <button type="submit" title="Eliminar"
+                          class="btn-icon w-9 h-9 grid place-items-center rounded-lg bg-rose-50 text-rose-600 hover:bg-rose-100 border border-rose-200">
+                    <i class="fas fa-trash text-xs"></i>
+                  </button>
+                </form>
+              </div>
+            </td>
+          </tr>
+          {% else %}
+          <tr>
+            <td colspan="7" class="px-5 py-16 text-center">
+              <div class="inline-flex flex-col items-center gap-3">
+                <div class="w-16 h-16 rounded-full bg-medical-50 flex items-center justify-center">
+                  <i class="fas fa-inbox text-medical-400 text-2xl"></i>
+                </div>
+                <p class="text-gray-500 font-semibold">Aún no hay mensajes</p>
+                <p class="text-gray-400 text-xs">Las consultas del formulario aparecerán aquí.</p>
+              </div>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Cards (< md) -->
+  <div class="grid gap-4 md:hidden" id="msgCards">
+    {% for m in mensajes %}
+    <div class="slide-in bg-white rounded-2xl p-5 border border-gray-100 shadow-sm {% if not m.leido %}ring-2 ring-amber-200{% endif %}"
+         data-status="{{ 'read' if m.leido else 'pending' }}"
+         data-search="{{ (m.nombre ~ ' ' ~ m.email ~ ' ' ~ (m.empresa or '') ~ ' ' ~ m.mensaje)|lower }}"
+         style="animation-delay: {{ loop.index0 * 0.04 }}s">
+      <div class="flex items-start justify-between mb-3">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-full bg-gradient-to-br from-medical-500 to-medical-700 flex items-center justify-center text-white font-bold">
+            {{ m.nombre[0]|upper if m.nombre else '?' }}
+          </div>
+          <div>
+            <div class="font-bold text-gray-900">{{ m.nombre }}</div>
+            <div class="text-xs text-gray-400">#{{ m.id }} · {{ m.fecha.strftime("%d-%m-%Y %H:%M") }}</div>
+          </div>
+        </div>
+        {% if m.leido %}
+          <span class="inline-flex items-center gap-1 px-2 py-1 text-xs rounded-full bg-emerald-100 text-emerald-700"><i class="fas fa-check"></i></span>
+        {% else %}
+          <span class="inline-flex items-center gap-1 px-2 py-1 text-xs rounded-full bg-amber-100 text-amber-700"><i class="fas fa-envelope-open-text"></i></span>
+        {% endif %}
+      </div>
+      <div class="space-y-1 text-sm">
+        <a href="mailto:{{ m.email }}" class="flex items-center gap-2 text-medical-600"><i class="fas fa-envelope"></i> {{ m.email }}</a>
+        {% if m.telefono %}<div class="flex items-center gap-2 text-gray-500"><i class="fas fa-phone"></i> {{ m.telefono }}</div>{% endif %}
+        {% if m.empresa %}<div class="flex items-center gap-2 text-gray-500"><i class="fas fa-hospital"></i> {{ m.empresa }}</div>{% endif %}
+      </div>
+      <p class="text-sm text-gray-700 mt-3 pt-3 border-t border-gray-100">{{ m.mensaje }}</p>
+      <div class="flex gap-2 mt-4">
+        <form method="POST" action="{{ url_for('admin.toggle_mensaje', id=m.id) }}" class="flex-1">
+          <button type="submit" class="w-full px-3 py-2 text-xs font-semibold rounded-lg bg-medical-50 text-medical-700 hover:bg-medical-100 border border-medical-200">
+            <i class="fas {% if m.leido %}fa-envelope{% else %}fa-envelope-open{% endif %}"></i>
+            {% if m.leido %}No leído{% else %}Marcar leído{% endif %}
+          </button>
+        </form>
+        <a href="mailto:{{ m.email }}" class="flex-1 text-center px-3 py-2 text-xs font-semibold rounded-lg bg-blue-50 text-blue-700 hover:bg-blue-100 border border-blue-200">
+          <i class="fas fa-reply"></i> Responder
+        </a>
+        <form method="POST" action="{{ url_for('admin.delete_mensaje', id=m.id) }}" onsubmit="return confirm('¿Eliminar?');">
+          <button type="submit" class="w-10 h-full grid place-items-center rounded-lg bg-rose-50 text-rose-600 hover:bg-rose-100 border border-rose-200">
+            <i class="fas fa-trash text-xs"></i>
+          </button>
+        </form>
+      </div>
+    </div>
+    {% else %}
+    <div class="text-center py-12 bg-white rounded-2xl border border-gray-100">
+      <i class="fas fa-inbox text-medical-400 text-3xl mb-2"></i>
+      <p class="text-gray-500">Aún no hay mensajes.</p>
+    </div>
+    {% endfor %}
+  </div>
+
+  <p id="noResults" class="hidden text-center text-gray-400 py-8"><i class="fas fa-search"></i> Sin resultados para tu búsqueda.</p>
+
+  <footer class="mt-12 text-center text-xs text-gray-400">
+    © {{ config.STORE_NAME or 'Leucode.IA' }} · Panel administrativo
+  </footer>
+</section>
+
+<script>
+  (function(){
+    const input = document.getElementById('searchInput');
+    const btns = document.querySelectorAll('.filter-btn');
+    let currentFilter = 'all';
+
+    function applyFilters(){
+      const q = (input?.value || '').toLowerCase().trim();
+      const rows = document.querySelectorAll('[data-search]');
+      let visible = 0;
+      rows.forEach(r => {
+        const matchSearch = !q || r.dataset.search.includes(q);
+        const matchFilter = currentFilter === 'all' || r.dataset.status === currentFilter;
+        const show = matchSearch && matchFilter;
+        r.style.display = show ? '' : 'none';
+        if (show) visible++;
+      });
+      const nr = document.getElementById('noResults');
+      if (nr) nr.classList.toggle('hidden', visible > 0 || rows.length === 0);
+    }
+
+    input?.addEventListener('input', applyFilters);
+    btns.forEach(b => b.addEventListener('click', () => {
+      currentFilter = b.dataset.filter;
+      btns.forEach(x => {
+        x.classList.remove('active','bg-medical-600','text-white');
+        if (x.dataset.filter === 'pending') x.classList.add('bg-amber-50','text-amber-700','border','border-amber-200');
+        else if (x.dataset.filter === 'read') x.classList.add('bg-emerald-50','text-emerald-700','border','border-emerald-200');
+        else x.classList.add('bg-gray-100','text-gray-700');
+      });
+      b.classList.add('active','bg-medical-600','text-white');
+      b.classList.remove('bg-amber-50','text-amber-700','bg-emerald-50','text-emerald-700','bg-gray-100','text-gray-700','border','border-amber-200','border-emerald-200');
+      applyFilters();
+    }));
+  })();
+</script>
+</body>
+</html>

@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Stratechic | Observabilidad y performance engineering</title>
+  <meta name="description" content="Stratechic ayuda a operaciones digitales críticas con observabilidad, pruebas de carga y estrés, y la plataforma Zentriks. Assessment, implementación y evidencia para decidir.">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://stratechic.cl/">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Stratechic">
+  <meta property="og:url" content="https://stratechic.cl/">
+  <meta property="og:title" content="Stratechic | Observabilidad y performance engineering">
+  <meta property="og:description" content="Decisiones claras para disponibilidad, rendimiento y continuidad. Partner de Zentriks.">
+  <meta property="og:image" content="https://stratechic.cl/static/stratechic-logo.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" href="{{ url_for('static', filename='stratechic-logo.png') }}">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --ink: #111827;
+      --muted: #475569;
+      --line: #d9e2ef;
+      --paper: #f4f7fb;
+      --white: #ffffff;
+      --navy: #0b1220;
+      --navy-2: #121f34;
+      --blue: #2563eb;
+      --blue-deep: #1d4ed8;
+      --teal: #14b8a6;
+      --teal-soft: #5eead4;
+      --slate: #334155;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: var(--white);
+      font: 16px/1.6 Inter, Arial, sans-serif;
+    }
+    a { color: inherit; }
+    img { max-width: 100%; }
+    h1, h2, h3, p { margin: 0 0 1rem; }
+    h1, h2, h3 { line-height: 1.12; letter-spacing: -0.045em; }
+    h1 { font-size: clamp(2.6rem, 6vw, 5rem); letter-spacing: -0.065em; font-weight: 800; }
+    h2 { font-size: clamp(2rem, 4vw, 3.15rem); font-weight: 800; }
+    h3 { font-size: 1.2rem; letter-spacing: -0.02em; }
+    .wrap { width: min(1120px, 90%); margin: auto; }
+    .eyebrow {
+      font-size: 0.76rem;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--blue-deep);
+      margin-bottom: 0.85rem;
+    }
+    .dark .eyebrow { color: var(--teal-soft); }
+    .lede { font-size: 1.12rem; color: #cbd5e1; max-width: 58ch; }
+    .dark { background: var(--navy); color: white; }
+    .muted { background: var(--paper); }
+    section { padding: 76px 0; }
+    section[id], article[id] { scroll-margin-top: 88px; }
+    .skip {
+      position: absolute; left: 12px; top: -40px;
+      background: var(--blue); color: white; padding: 8px 12px; border-radius: 6px; z-index: 20;
+    }
+    .skip:focus { top: 12px; }
+
+    header {
+      position: sticky; top: 0; z-index: 10;
+      background: rgba(255,255,255,0.94);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--line);
+    }
+    .bar {
+      display: flex; gap: 20px; align-items: center; justify-content: space-between;
+      padding: 12px 0; flex-wrap: wrap;
+    }
+    .logo { display: block; height: 46px; width: auto; }
+    nav { display: flex; gap: 18px; align-items: center; flex-wrap: wrap; }
+    nav a { text-decoration: none; font-weight: 700; font-size: 0.95rem; }
+    nav a:hover { color: var(--blue-deep); }
+    .menu-btn {
+      display: none; background: transparent; border: 1px solid var(--line);
+      border-radius: 6px; padding: 8px 12px; font: inherit; font-weight: 700; cursor: pointer;
+    }
+    .button {
+      display: inline-flex; align-items: center; justify-content: center;
+      background: var(--blue); color: white; border: 1px solid var(--blue);
+      padding: 10px 16px; border-radius: 6px; cursor: pointer;
+      font: inherit; font-weight: 700; text-decoration: none;
+    }
+    .button:hover { background: #1d4ed8; }
+    .secondary { background: transparent; color: inherit; }
+    .secondary:hover { background: rgba(255,255,255,0.06); }
+    .light-secondary { background: transparent; color: var(--ink); border-color: var(--slate); }
+    .light-secondary:hover { background: white; }
+    .actions { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+
+    .hero { padding: clamp(64px, 9vw, 120px) 0; position: relative; overflow: hidden; }
+    .hero::before {
+      content: "";
+      position: absolute; inset: 0;
+      background-image:
+        linear-gradient(rgba(94,234,212,0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(94,234,212,0.05) 1px, transparent 1px);
+      background-size: 72px 72px;
+      mask-image: radial-gradient(ellipse 70% 80% at 20% 20%, black, transparent 75%);
+      pointer-events: none;
+    }
+    .split {
+      display: grid; grid-template-columns: 1.2fr 0.9fr;
+      gap: clamp(28px, 6vw, 80px); align-items: center; position: relative;
+    }
+    .diagram {
+      background: var(--navy-2); border: 1px solid var(--slate);
+      border-radius: 12px; padding: 26px; margin: 0;
+    }
+    .step { padding: 14px 0; border-top: 1px solid var(--slate); }
+    .step span { color: var(--teal-soft); margin-right: 10px; font-weight: 700; }
+
+    .proof { padding: 20px 0; border-bottom: 1px solid var(--line); }
+    .proof p { margin: 0; }
+    .proof a { font-weight: 700; color: var(--blue-deep); }
+
+    .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; }
+    .stack { display: grid; gap: 12px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
+    .card {
+      padding: 22px; background: white; border: 1px solid var(--line); border-radius: 8px;
+    }
+    .card p { margin: 0; color: var(--muted); }
+    .card h3 { margin-bottom: 0.45rem; }
+    .card:hover { border-color: #93c5fd; }
+
+    .featured { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1.5rem 0 0.5rem; }
+    .feature {
+      background: white; border: 1px solid var(--line); border-radius: 12px; padding: 28px;
+      border-top: 3px solid var(--teal);
+    }
+    .feature p { color: var(--muted); }
+    .feature a { font-weight: 700; color: var(--blue-deep); text-decoration: none; }
+    .kicker { font-size: 0.78rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--teal); }
+
+    details { border-top: 1px solid var(--line); padding: 14px 0; }
+    summary { cursor: pointer; font-weight: 700; }
+    details p { margin: 8px 0 0; color: var(--muted); }
+    details a { font-weight: 700; color: var(--blue-deep); }
+
+    .partner {
+      display: grid; grid-template-columns: 0.9fr 1.1fr; gap: 28px; align-items: start;
+    }
+    .units { display: grid; gap: 12px; }
+    .unit {
+      background: var(--navy-2); border: 1px solid var(--slate); border-radius: 10px; padding: 16px 18px;
+    }
+    .unit strong { display: block; color: white; }
+    .unit span { color: #cbd5e1; font-size: 0.95rem; }
+    .unit em { color: var(--teal-soft); font-style: normal; font-weight: 700; font-size: 0.78rem; letter-spacing: 0.08em; }
+
+    .method { display: grid; grid-template-columns: repeat(5, 1fr); gap: 16px; padding: 0; list-style: none; margin: 1.5rem 0 0; }
+    .method li { border-top: 2px solid var(--teal); padding-top: 14px; }
+    .method strong { display: block; margin-bottom: 0.35rem; }
+
+    .articles { margin: 0; padding-left: 18px; }
+    .articles li { margin: 0.45em 0; }
+
+    form p.note { color: #cbd5e1; font-size: 0.92rem; }
+    label { display: block; margin-bottom: 12px; font-weight: 600; font-size: 0.92rem; }
+    input, textarea, select {
+      display: block; width: 100%; margin-top: 6px;
+      font: inherit; padding: 10px; border: 1px solid #64748b; border-radius: 4px;
+      background: white; color: var(--ink);
+    }
+    .field-error { color: #b91c1c; font-size: 0.85rem; font-weight: 600; margin: 4px 0 0; }
+    .alert { padding: 12px 14px; border-radius: 8px; margin-bottom: 14px; }
+    .alert-success { background: #ecfdf5; color: #065f46; border: 1px solid #a7f3d0; }
+    .alert-error { background: #fef2f2; color: #991b1b; border: 1px solid #fecaca; }
+    .form-card {
+      background: white; color: var(--ink); border-radius: 12px; padding: 22px;
+    }
+    .form-card .note { color: var(--muted); }
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0 12px; }
+    .full { grid-column: 1 / -1; }
+
+    footer { padding: 28px 0 40px; }
+    footer .bar { align-items: flex-start; }
+    .fine { color: var(--muted); font-size: 0.92rem; max-width: 46ch; }
+    footer a { font-weight: 700; }
+
+    :focus-visible { outline: 3px solid #38bdf8; outline-offset: 3px; }
+    @media (max-width: 860px) {
+      .split, .featured, .partner, .grid-3, .form-grid { grid-template-columns: 1fr; }
+      .method { grid-template-columns: 1fr 1fr; }
+      .full { grid-column: auto; }
+      section { padding: 52px 0; }
+      .menu-btn { display: inline-flex; }
+      nav {
+        display: none; width: 100%; flex-direction: column; align-items: flex-start;
+        padding-bottom: 8px;
+      }
+      nav.open { display: flex; }
+      .bar .button.desk { display: none; }
+    }
+    @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+  </style>
+</head>
+<body>
+  <a class="skip" href="#contenido">Saltar al contenido</a>
+  <header id="inicio">
+    <div class="wrap bar">
+      <a href="#inicio" aria-label="Stratechic, inicio">
+        <img class="logo" alt="Stratechic" src="{{ url_for('static', filename='stratechic-logo.png') }}">
+      </a>
+      <button class="menu-btn" type="button" aria-expanded="false" aria-controls="nav">Menú</button>
+      <nav id="nav" aria-label="Navegación principal">
+        <a href="#soluciones">Soluciones</a>
+        <a href="#zentriks">Zentriks</a>
+        <a href="#metodo">Cómo trabajamos</a>
+        <a href="#casos">Casos</a>
+        <a href="#contacto">Contacto</a>
+      </nav>
+      <a class="button desk" href="#contacto">Agenda una reunión</a>
+    </div>
+  </header>
+
+  <main id="contenido">
+    <section class="hero dark">
+      <div class="wrap split">
+        <div>
+          <p class="eyebrow">Tecnología para operaciones críticas</p>
+          <h1>Desafíos tecnológicos complejos. Decisiones claras.</h1>
+          <p class="lede">Ayudamos a empresas con operaciones digitales críticas a resolver problemas de disponibilidad, rendimiento, costos e integración. Observabilidad y performance engineering, con Zentriks como plataforma partner.</p>
+          <div class="actions">
+            <a class="button" href="#contacto">Agenda una reunión</a>
+            <a class="button secondary" href="#soluciones">Cómo ayudamos</a>
+          </div>
+        </div>
+        <figure class="diagram">
+          <figcaption class="eyebrow">Ejemplo ilustrativo · Próximo peak de demanda</figcaption>
+          <div class="step"><span>01</span>La plataforma responde lento</div>
+          <div class="step"><span>02</span>Medimos el journey y el cuello de botella</div>
+          <div class="step"><span>03</span>Priorizamos qué ajustar antes del peak</div>
+        </figure>
+      </div>
+    </section>
+
+    <aside class="proof muted">
+      <div class="wrap">
+        <p><strong>Partner de Zentriks</strong> · Observabilidad, pruebas de performance y continuidad operativa. Proyectos en educación, transporte y servicios digitales. <a href="#casos">Conoce el trabajo realizado →</a></p>
+      </div>
+    </aside>
+
+    <section>
+      <div class="wrap">
+        <p class="eyebrow">Desafíos de negocio</p>
+        <h2>¿Qué está frenando tu operación?</h2>
+        <div class="grid">
+          <article class="card">
+            <h3>Los incidentes se repiten</h3>
+            <p>Hay alertas, pero cuesta identificar la causa y priorizar qué resolver.</p>
+          </article>
+          <article class="card">
+            <h3>Se acerca un peak de demanda</h3>
+            <p>Necesitas saber si la plataforma responderá antes de una fecha crítica.</p>
+          </article>
+          <article class="card">
+            <h3>El gasto cloud sube</h3>
+            <p>Quieres entender qué impulsa el costo y dónde puedes intervenir.</p>
+          </article>
+          <article class="card">
+            <h3>Los sistemas siguen desconectados</h3>
+            <p>Tu equipo dedica tiempo a mover datos y repetir tareas manuales.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="soluciones" class="muted">
+      <div class="wrap">
+        <p class="eyebrow">Soluciones</p>
+        <h2>Cómo ayudamos</h2>
+        <p>Dos capacidades concentran el trabajo: ver la operación con claridad y probarla antes de que la prueben tus usuarios.</p>
+        <div class="featured">
+          <article class="feature" id="observabilidad">
+            <p class="kicker">Observabilidad</p>
+            <h3>Assessment, implementación y operación</h3>
+            <p>¿No sabes por dónde empezar, o ya tienes una plataforma que aún no entrega el valor esperado? Evaluamos operación, madurez y presupuesto para definir una estrategia de observabilidad. El enfoque es agnóstico: la herramienta se alinea con lo que el negocio necesita observar y decidir.</p>
+            <p>Assessment, roadmap, instrumentación, dashboards, alertas, AMS y monitoreo sintético de journeys críticos.</p>
+            <p><a href="#contacto">Conversar sobre observabilidad →</a></p>
+          </article>
+          <article class="feature" id="performance">
+            <p class="kicker">Performance engineering</p>
+            <h3>Pruebas de carga y estrés</h3>
+            <p>Evaluamos journeys de usuario, flujos de negocio y APIs ante usuarios simultáneos, picos de tráfico y demanda sostenida. El resultado muestra dónde aumentan los tiempos, aparecen errores y se interrumpen las transacciones.</p>
+            <p>Escenarios de negocio, rampas de carga, correlación con infraestructura y un informe para decidir qué ajustar antes de producción o de una campaña.</p>
+            <p><a href="#contacto">Conversar sobre una prueba →</a></p>
+          </article>
+        </div>
+        <details>
+          <summary>Cloud y AWS</summary>
+          <p>Escala con mayor control sobre costos, seguridad y arquitectura. Útil cuando el gasto crece más rápido que la visibilidad.</p>
+        </details>
+        <details>
+          <summary>Automatización e IA</summary>
+          <p>Prioriza y automatiza flujos repetitivos con trazabilidad, incluidos asistentes que conviene probar antes de exponerlos a usuarios.</p>
+        </details>
+        <details>
+          <summary>Desarrollo e integraciones</summary>
+          <p>Conecta sistemas y desarrolla lo que falta para que los datos dejen de moverse a mano.</p>
+        </details>
+        <details>
+          <summary>AMS y optimización continua</summary>
+          <p>Mantén y evoluciona plataformas críticas con soporte y mejoras priorizadas según evidencia, no según la alerta más ruidosa.</p>
+        </details>
+        <details>
+          <summary>Moodle Enterprise</summary>
+          <p>Mejora el rendimiento, la escalabilidad y la integración de una plataforma educativa cuando alumnos y docentes coinciden en el mismo momento.</p>
+        </details>
+      </div>
+    </section>
+
+    <section id="zentriks" class="dark">
+      <div class="wrap partner">
+        <div>
+          <p class="eyebrow">Plataforma partner</p>
+          <h2>Stratechic y Zentriks</h2>
+          <p class="lede">Zentriks monitorea, observa y pone a prueba la operación. Stratechic conecta esa evidencia con la decisión: qué medir, qué escenario correr y qué cambiar primero.</p>
+          <div class="actions">
+            <a class="button" href="https://zentriks.cl/" rel="noopener">Conocer Zentriks</a>
+            <a class="button secondary" href="#contacto">Hablar del partnership</a>
+          </div>
+        </div>
+        <div class="units">
+          <article class="unit">
+            <em>Z-SCOUT</em>
+            <strong>Observación sintética</strong>
+            <span>Recorre journeys reales en un navegador, mide cada paso y deja evidencia cuando algo falla.</span>
+          </article>
+          <article class="unit">
+            <em>Z-LOAD</em>
+            <strong>Carga y estrés</strong>
+            <span>Simula usuarios concurrentes sobre flujos de negocio hasta hacer visible el punto de quiebre.</span>
+          </article>
+          <article class="unit">
+            <em>Z-PROMPT</em>
+            <strong>Pruebas de IA</strong>
+            <span>Ejecuta conversaciones contra asistentes y agentes para evaluar respuesta, latencia y consistencia.</span>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="metodo">
+      <div class="wrap">
+        <p class="eyebrow">Cómo trabajamos</p>
+        <h2>The Stratechic Way</h2>
+        <ol class="method">
+          <li><strong>01 Escuchar</strong>Entendemos qué está en juego para la operación.</li>
+          <li><strong>02 Comprender</strong>Revisamos datos, señales y posibles causas.</li>
+          <li><strong>03 Diseñar</strong>Acordamos una ruta y criterios de éxito.</li>
+          <li><strong>04 Implementar</strong>Ejecutamos y validamos los entregables.</li>
+          <li><strong>05 Evolucionar</strong>Medimos y priorizamos la siguiente mejora.</li>
+        </ol>
+      </div>
+    </section>
+
+    <section class="muted">
+      <div class="wrap split">
+        <article id="casos">
+          <p class="eyebrow">Evidencia</p>
+          <h2>Casos</h2>
+          <div class="stack">
+            <article class="card">
+              <h3>IACC · Moodle bajo alta concurrencia</h3>
+              <p>Pruebas de estrés y observabilidad para distinguir la exigencia de alumnos y docentes, y ubicar el cuello de botella.</p>
+            </article>
+            <article class="card">
+              <h3>EFE Trenes de Chile · Antes de producción</h3>
+              <p>Pruebas de carga y estrés de una plataforma crítica, con cuellos de botella e informe para decidir.</p>
+            </article>
+            <article class="card">
+              <h3>IACC · Observabilidad con Grafana</h3>
+              <p>Infraestructura, experiencia de estudiantes y monitoreos sintéticos conectados a la operación educativa.</p>
+            </article>
+            <article class="card">
+              <h3>DIGEVO · Continuidad de GeForce NOW</h3>
+              <p>Atención, observabilidad y escalamiento integrados para un servicio digital de alta visibilidad.</p>
+            </article>
+          </div>
+        </article>
+        <article id="perspectiva">
+          <p class="eyebrow">Temas</p>
+          <h2>Perspectiva</h2>
+          <ul class="articles">
+            <li>Qué medir antes de un peak de demanda</li>
+            <li>Cómo priorizar alertas cuando todo parece urgente</li>
+            <li>Qué revisar cuando sube el gasto cloud</li>
+            <li>Cuándo una prueba de estrés cambia una decisión de capacidad</li>
+          </ul>
+        </article>
+      </div>
+    </section>
+
+    <section class="dark" id="contacto">
+      <div class="wrap split">
+        <div>
+          <p class="eyebrow">Contacto</p>
+          <h2>Cuéntanos tu desafío</h2>
+          <p class="lede">¿Qué está pasando y qué impacto tiene en tu operación? Con ese contexto enfocamos la primera conversación: observabilidad, una prueba de performance o la plataforma Zentriks.</p>
+        </div>
+        <form class="form-card" method="POST" action="{{ url_for('main.contacto') }}" novalidate>
+          {{ form.hidden_tag() }}
+          {% with messages = get_flashed_messages(with_categories=true) %}
+            {% for category, message in messages %}
+              <p class="alert {% if category == 'success' %}alert-success{% else %}alert-error{% endif %}" role="status">{{ message }}</p>
+            {% endfor %}
+          {% endwith %}
+          <p class="note">Un especialista de Stratechic revisa cada solicitud.</p>
+          <div class="form-grid">
+            <label class="full">Nombre
+              {{ form.nombre(autocomplete="name", placeholder="Tu nombre") }}
+              {% for error in form.nombre.errors %}<span class="field-error">{{ error }}</span>{% endfor %}
+            </label>
+            <label>Correo de trabajo
+              {{ form.email(type="email", autocomplete="email", placeholder="nombre@empresa.cl") }}
+              {% for error in form.email.errors %}<span class="field-error">{{ error }}</span>{% endfor %}
+            </label>
+            <label>Empresa
+              {{ form.empresa(autocomplete="organization", placeholder="Nombre de la empresa") }}
+              {% for error in form.empresa.errors %}<span class="field-error">{{ error }}</span>{% endfor %}
+            </label>
+            <label>Teléfono
+              {{ form.telefono(autocomplete="tel", placeholder="+56 9 ...") }}
+            </label>
+            <label>¿Qué necesitas resolver?
+              {{ form.necesidad() }}
+            </label>
+            <label class="full">Tu desafío
+              {{ form.mensaje(rows="4", placeholder="Qué está pasando, desde cuándo y qué impacto tiene.") }}
+              {% for error in form.mensaje.errors %}<span class="field-error">{{ error }}</span>{% endfor %}
+            </label>
+          </div>
+          <button class="button" type="submit">Enviar</button>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <footer class="muted">
+    <div class="wrap bar">
+      <div>
+        <strong>Stratechic</strong>
+        <p class="fine">Observabilidad, performance engineering y partner de Zentriks para operaciones digitales críticas.</p>
+      </div>
+      <a href="https://zentriks.cl/" rel="noopener">Zentriks</a>
+      <a href="#inicio">Volver arriba</a>
+    </div>
+  </footer>
+
+  <script>
+    const btn = document.querySelector('.menu-btn');
+    const nav = document.querySelector('#nav');
+    btn?.addEventListener('click', () => {
+      const open = nav.classList.toggle('open');
+      btn.setAttribute('aria-expanded', String(open));
+    });
+    nav?.querySelectorAll('a').forEach((link) => {
+      link.addEventListener('click', () => {
+        nav.classList.remove('open');
+        btn?.setAttribute('aria-expanded', 'false');
+      });
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,13 @@
+venv/
+.venv/
+__pycache__/
+*.py[cod]
+.history/
+instance/
+tmp/
+.env
+*.db
+*.log
+wsgi_error.log
+stratechic-cpanel.zip
+ventas.py

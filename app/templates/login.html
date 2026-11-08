@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login Administrador · Leucode.IA</title>
+
+  <!-- Tailwind + Font Awesome -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'] },
+          colors: {
+            medical: {
+              50:  '#eef2ff', 100: '#dbe4ff', 200: '#b5c6ff', 300: '#8aa4ff',
+              400: '#5c82ff', 500: '#2f5dff', 600: '#2247e0', 700: '#1737b8',
+              800: '#122b8f', 900: '#0e2167'
+            }
+          }
+        }
+      }
+    };
+  </script>
+
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+
+    /* Fondo animado con blobs */
+    .blob {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(80px);
+      opacity: 0.55;
+      animation: blob-move 18s ease-in-out infinite;
+    }
+    .blob.b1 { width: 500px; height: 500px; top: -150px; left: -120px; background: #2f5dff; }
+    .blob.b2 { width: 420px; height: 420px; bottom: -150px; right: -120px; background: #1737b8; animation-delay: -6s; }
+    .blob.b3 { width: 340px; height: 340px; top: 40%; left: 45%; background: #5c82ff; animation-delay: -12s; opacity: 0.35; }
+    @keyframes blob-move {
+      0%,100% { transform: translate(0,0) scale(1); }
+      33%     { transform: translate(60px,-40px) scale(1.1); }
+      66%     { transform: translate(-40px,60px) scale(0.95); }
+    }
+
+    /* Grid sutil */
+    .grid-bg {
+      background-image:
+        linear-gradient(rgba(47,93,255,0.08) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(47,93,255,0.08) 1px, transparent 1px);
+      background-size: 40px 40px;
+      -webkit-mask-image: radial-gradient(ellipse at center, black 40%, transparent 80%);
+              mask-image: radial-gradient(ellipse at center, black 40%, transparent 80%);
+    }
+
+    /* ECG latiendo */
+    @keyframes ecg-pulse {
+      0%, 100% { transform: scale(1); filter: drop-shadow(0 0 0 rgba(47,93,255,0)); }
+      50%      { transform: scale(1.08); filter: drop-shadow(0 0 20px rgba(47,93,255,0.7)); }
+    }
+    .ecg-logo { animation: ecg-pulse 2s ease-in-out infinite; }
+
+    @keyframes ecg-draw {
+      0%   { stroke-dashoffset: 100; }
+      60%  { stroke-dashoffset: 0; }
+      100% { stroke-dashoffset: 0; }
+    }
+    .ecg-line {
+      stroke-dasharray: 100;
+      animation: ecg-draw 2.4s ease-in-out infinite;
+    }
+
+    /* Card con glow */
+    @keyframes card-appear {
+      from { opacity: 0; transform: translateY(24px) scale(0.96); }
+      to   { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    .login-card {
+      animation: card-appear 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    @keyframes glow {
+      0%,100% { box-shadow: 0 20px 60px -10px rgba(47,93,255,0.35), 0 0 0 1px rgba(255,255,255,0.1) inset; }
+      50%     { box-shadow: 0 30px 80px -10px rgba(47,93,255,0.55), 0 0 0 1px rgba(255,255,255,0.15) inset; }
+    }
+    .card-glow { animation: glow 4s ease-in-out infinite; }
+
+    /* Shine en el título */
+    .shine {
+      background: linear-gradient(90deg, #1737b8 0%, #2f5dff 25%, #8aa4ff 50%, #2f5dff 75%, #1737b8 100%);
+      background-size: 200% auto;
+      -webkit-background-clip: text;
+              background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: shine-move 4s linear infinite;
+    }
+    @keyframes shine-move { to { background-position: 200% center; } }
+
+    /* Inputs con efecto de foco */
+    .input-field {
+      transition: all 0.3s ease;
+    }
+    .input-field:focus {
+      transform: translateY(-1px);
+      box-shadow: 0 10px 30px -5px rgba(47,93,255,0.25);
+    }
+
+    /* Botón con brillo en hover */
+    .btn-glow { position: relative; overflow: hidden; }
+    .btn-glow::before {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(110deg, transparent 40%, rgba(255,255,255,0.4) 50%, transparent 60%);
+      transform: translateX(-100%);
+      transition: transform 0.7s;
+    }
+    .btn-glow:hover::before { transform: translateX(100%); }
+
+    /* Partículas médicas flotando */
+    @keyframes float-particle {
+      0%, 100% { transform: translate(0, 0) rotate(0); }
+      50%      { transform: translate(20px, -30px) rotate(10deg); }
+    }
+    .particle {
+      position: absolute;
+      color: rgba(47,93,255,0.25);
+      animation: float-particle 8s ease-in-out infinite;
+    }
+
+    /* Ícono ECG mini animado en inputs (opcional decoración) */
+    @keyframes beat {
+      0%, 100% { transform: scale(1); }
+      50%      { transform: scale(1.2); }
+    }
+  </style>
+</head>
+
+<body class="min-h-screen bg-gradient-to-br from-white via-medical-50 to-white relative overflow-hidden">
+
+  <!-- Fondo animado -->
+  <div class="absolute inset-0 grid-bg"></div>
+  <div class="blob b1"></div>
+  <div class="blob b2"></div>
+  <div class="blob b3"></div>
+
+  <!-- Partículas flotando -->
+  <div class="particle text-3xl" style="top:12%; left:8%;  animation-delay: 0s;"><i class="fas fa-heartbeat"></i></div>
+  <div class="particle text-2xl" style="top:22%; right:12%; animation-delay: -2s;"><i class="fas fa-stethoscope"></i></div>
+  <div class="particle text-3xl" style="bottom:18%; left:14%; animation-delay: -4s;"><i class="fas fa-notes-medical"></i></div>
+  <div class="particle text-2xl" style="bottom:12%; right:10%; animation-delay: -6s;"><i class="fas fa-pills"></i></div>
+  <div class="particle text-xl"  style="top:50%; left:4%;  animation-delay: -3s;"><i class="fas fa-prescription-bottle-medical"></i></div>
+  <div class="particle text-xl"  style="top:60%; right:5%; animation-delay: -5s;"><i class="fas fa-user-doctor"></i></div>
+
+  <!-- Contenedor principal -->
+  <section class="relative min-h-screen flex items-center justify-center px-4 py-10 z-10">
+    <div class="w-full max-w-md">
+
+      <!-- Logo + vuelta al inicio -->
+      <div class="text-center mb-8">
+        <a href="{{ url_for('main.index') }}" class="inline-flex flex-col items-center gap-3 group">
+          <div class="ecg-logo w-16 h-16 rounded-2xl flex items-center justify-center shadow-xl" style="background: linear-gradient(135deg, #2f5dff, #1737b8);">
+            <svg viewBox="0 0 32 32" class="w-10 h-10" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path class="ecg-line" d="M2 16 L8 16 L10 10 L14 22 L18 6 L22 20 L24 16 L30 16"/>
+            </svg>
+          </div>
+          <div>
+            <div class="text-2xl font-extrabold text-gray-900">Leucode<span class="shine">.IA</span></div>
+            <div class="text-xs text-medical-600 font-semibold tracking-widest uppercase">Panel administrativo</div>
+          </div>
+        </a>
+      </div>
+
+      <!-- Card de login -->
+      <div class="login-card card-glow bg-white/90 backdrop-blur-xl rounded-3xl p-8 border border-white/60">
+
+        <div class="text-center mb-6">
+          <div class="inline-flex items-center gap-2 bg-medical-50 border border-medical-200 text-medical-700 px-3 py-1 rounded-full text-xs font-semibold mb-3">
+            <span class="relative flex w-2 h-2">
+              <span class="absolute inline-flex w-full h-full rounded-full bg-medical-500 opacity-75 animate-ping"></span>
+              <span class="relative inline-flex w-2 h-2 rounded-full bg-medical-500"></span>
+            </span>
+            <i class="fas fa-shield-halved"></i>
+            Acceso restringido
+          </div>
+          <h1 class="text-2xl font-extrabold text-gray-900">Bienvenido de vuelta</h1>
+          <p class="text-sm text-gray-500 mt-1">Ingresa para gestionar consultas y mensajes</p>
+        </div>
+
+        <!-- Flash messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            <div class="mb-5 space-y-2">
+              {% for category, message in messages %}
+                <div class="text-sm rounded-xl px-4 py-3 border flex items-center gap-2
+                            {% if category == 'success' %} border-emerald-200 bg-emerald-50 text-emerald-800
+                            {% elif category in ['error','danger'] %} border-rose-200 bg-rose-50 text-rose-800
+                            {% else %} border-medical-200 bg-medical-50 text-medical-800 {% endif %}">
+                  <i class="fas {% if category == 'success' %}fa-circle-check{% elif category in ['error','danger'] %}fa-circle-exclamation{% else %}fa-circle-info{% endif %}"></i>
+                  <span>{{ message }}</span>
+                </div>
+              {% endfor %}
+            </div>
+          {% endif %}
+        {% endwith %}
+
+        <!-- Formulario -->
+        <form method="POST" action="{{ url_for('admin.login') }}" class="space-y-5" novalidate>
+          {{ form.hidden_tag() }}
+
+          <!-- Usuario -->
+          <div>
+            <label for="username" class="block text-sm font-semibold text-gray-700 mb-2">
+              <i class="fas fa-user text-medical-500 mr-2"></i>Usuario
+            </label>
+            <div class="relative">
+              {{ form.username(class="input-field w-full pl-4 pr-4 py-3 rounded-xl border border-gray-200 bg-gray-50 focus:bg-white focus:border-medical-500 focus:ring-2 focus:ring-medical-200 focus:outline-none text-gray-900",
+                               id="username", placeholder="admin o correo@leucode.ia") }}
+            </div>
+            {% if form.username.errors %}
+              <p class="mt-1 text-xs text-rose-600"><i class="fas fa-circle-exclamation mr-1"></i>{{ form.username.errors[0] }}</p>
+            {% endif %}
+          </div>
+
+          <!-- Contraseña -->
+          <div>
+            <label for="password" class="block text-sm font-semibold text-gray-700 mb-2">
+              <i class="fas fa-lock text-medical-500 mr-2"></i>Contraseña
+            </label>
+            <div class="relative">
+              {{ form.password(class="input-field w-full pl-4 pr-12 py-3 rounded-xl border border-gray-200 bg-gray-50 focus:bg-white focus:border-medical-500 focus:ring-2 focus:ring-medical-200 focus:outline-none text-gray-900",
+                               id="password", type="password", autocomplete="current-password", placeholder="••••••••") }}
+              <button type="button" id="togglePass"
+                      class="absolute inset-y-0 right-3 my-auto h-8 w-8 grid place-items-center rounded-lg text-gray-400 hover:text-medical-600 hover:bg-medical-50 transition-colors"
+                      aria-label="Mostrar u ocultar contraseña">
+                <i id="eyeIcon" class="fas fa-eye"></i>
+              </button>
+            </div>
+            {% if form.password.errors %}
+              <p class="mt-1 text-xs text-rose-600"><i class="fas fa-circle-exclamation mr-1"></i>{{ form.password.errors[0] }}</p>
+            {% endif %}
+          </div>
+
+          <!-- Opciones -->
+          <div class="flex items-center justify-between text-sm">
+            <label class="inline-flex items-center gap-2 text-gray-600 cursor-pointer select-none">
+              <input type="checkbox" name="remember" class="rounded border-gray-300 text-medical-600 focus:ring-medical-500">
+              Recuérdame
+            </label>
+          </div>
+
+          <!-- Botón -->
+          <button type="submit" id="loginBtn"
+                  class="btn-glow w-full inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-medical-600 to-medical-800 hover:from-medical-700 hover:to-medical-900 px-5 py-3.5 font-bold text-white shadow-xl shadow-medical-600/30 transition-all hover:-translate-y-0.5">
+            <svg id="btnSpinner" class="hidden h-5 w-5 animate-spin" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none"></circle>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4A4 4 0 008 12H4z"></path>
+            </svg>
+            <i class="fas fa-right-to-bracket"></i>
+            Ingresar al panel
+            <i class="fas fa-arrow-right"></i>
+          </button>
+
+          <!-- Nota de seguridad -->
+          <div class="flex items-start gap-2 text-xs text-gray-500 pt-2 border-t border-gray-100">
+            <i class="fas fa-shield-halved text-medical-500 mt-0.5"></i>
+            <span>Conexión encriptada. Todas las acciones dentro del panel pueden ser registradas para fines de auditoría.</span>
+          </div>
+        </form>
+      </div>
+
+      <!-- Volver al sitio -->
+      <div class="text-center mt-6">
+        <a href="{{ url_for('main.index') }}" class="inline-flex items-center gap-2 text-sm text-gray-500 hover:text-medical-600 transition-colors">
+          <i class="fas fa-arrow-left"></i>
+          Volver al sitio público
+        </a>
+        <p class="mt-3 text-xs text-gray-400">
+          © {{ config.STORE_NAME or 'Leucode.IA' }} · Panel administrativo
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- JS -->
+  <script>
+    (function () {
+      const pass = document.getElementById('password');
+      const toggle = document.getElementById('togglePass');
+      const eye = document.getElementById('eyeIcon');
+      const btn = document.getElementById('loginBtn');
+      const spinner = document.getElementById('btnSpinner');
+
+      if (toggle && pass && eye) {
+        toggle.addEventListener('click', () => {
+          const isPwd = pass.getAttribute('type') === 'password';
+          pass.setAttribute('type', isPwd ? 'text' : 'password');
+          eye.classList.toggle('fa-eye');
+          eye.classList.toggle('fa-eye-slash');
+        });
+      }
+
+      if (btn) {
+        btn.closest('form')?.addEventListener('submit', () => {
+          spinner?.classList.remove('hidden');
+          btn.setAttribute('disabled', 'true');
+          btn.classList.add('opacity-80', 'cursor-wait');
+        });
+      }
+    })();
+  </script>
+</body>
+</html>
